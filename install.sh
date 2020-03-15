@@ -55,6 +55,8 @@ fi
 # Deploy処理
 deploy() {
 
+  cd ${DOTFILES_DIRECTORY}
+
   for f in .??*; do
 
     # 無視したいファイルやディレクトリ
