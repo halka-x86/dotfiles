@@ -41,6 +41,7 @@ if [ -n "${OVERWRITE}" -o ! -d ${DOTFILES_DIRECTORY} ]; then
   rm -rf ${DOTFILES_DIRECTORY}
   mkdir ${DOTFILES_DIRECTORY}
 
+  # gitがインストールされていない場合はcurlにてダウンロード
   if type "git" >/dev/null 2>&1; then
     git clone --recursive "${REMOTE_URL}" "${DOTFILES_DIRECTORY}"
   else
@@ -62,14 +63,8 @@ deploy() {
     # 無視したいファイルやディレクトリ
     [[ "${DOTFILES_EXCLUDES[@]}" =~ "${f}" ]] && continue
 
-    # .config 内のファイル処理
-    if [ ${f} = ${CONFIG_DIR} ]; then
-      while read -d $'\0' file; do
-        mkdir -p ${HOME}/$(dirname ${file})
-        ln -snfv ${DOTFILES_DIRECTORY}/${file} ${HOME}/${file}
-      done < <(find ${CONFIG_DIR} -type f -print0)
-      continue
-    fi
+    # ホームディレクトリに同一のファイルがあれば削除
+    echo ${f}
 
     # シンボリックリンク作成
     ln -snfv ${DOTFILES_DIRECTORY}/${f} ${HOME}/${f}
