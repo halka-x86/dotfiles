@@ -64,7 +64,7 @@ deploy() {
     [[ "${DOTFILES_EXCLUDES[@]}" =~ "${f}" ]] && continue
 
     # ホームディレクトリに同一のファイルがあれば削除
-    echo ${f}
+    rm -fr ${HOME}/${f}
 
     # シンボリックリンク作成
     ln -snfv ${DOTFILES_DIRECTORY}/${f} ${HOME}/${f}
