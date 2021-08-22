@@ -1,0 +1,48 @@
+[user]
+	name = halka
+	email = halkax84@gmail.com
+[core]
+	# editor = emacs
+	quotepath = false
+	autocrlf = false
+[push]
+	default = current
+[color]
+	status = auto
+	diff = auto
+	branch = auto
+	interactive = auto
+	grep = auto
+[alias]
+	s   = status
+	ss  = status -s
+	b   = branch
+	ba  = branch -a
+  br  = branch -r
+	co  = checkout
+	cob = checkout -b
+	com = checkout master
+	cod = checkout develop
+	a   = add
+	au  = add --update
+	aa  = add --all
+	cm  = commit
+	cmm = commit -m
+	cma = commit --amend
+	f   = fetch
+	fp  = fetch --prune
+	po  = push origin
+	gr  = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
+	r   = reset HEAD
+	r1  = reset HEAD~
+	r2  = reset HEAD~~
+	r3  = reset HEAD~~~
+	rs  = reset --soft HEAD
+	rs1 = reset --soft HEAD~
+	rs2 = reset --soft HEAD~~
+	rs3 = reset --soft HEAD~~~
+	d   = diff
+	dm  = diff master
+	d1  = diff HEAD~
+	d2  = diff HEAD~~
+	d3  = diff HEAD~~~
