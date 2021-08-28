@@ -41,14 +41,10 @@ if [ -n "${OVERWRITE}" -o ! -d ${DOTFILES_DIRECTORY} ]; then
   rm -rf ${DOTFILES_DIRECTORY}
   mkdir ${DOTFILES_DIRECTORY}
 
-  # gitがインストールされていない場合はcurlにてダウンロード
-  if type "git" >/dev/null 2>&1; then
-    git clone --recursive "${REMOTE_URL}" "${DOTFILES_DIRECTORY}"
-  else
-    curl -fsSLo ${HOME}/dotfiles.tar.gz ${DOTFILES_TARBALL}
-    tar -zxf ${HOME}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_DIRECTORY}
-    rm -f ${HOME}/dotfiles.tar.gz
-  fi
+  # curlでダウンロード
+  curl -fsSLo ${HOME}/dotfiles.tar.gz ${DOTFILES_TARBALL}
+  tar -zxf ${HOME}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_DIRECTORY}
+  rm -f ${HOME}/dotfiles.tar.gz
 
   echo $(tput setaf 2)Download dotfiles complete!. ✔︎$(tput sgr0)
 fi
