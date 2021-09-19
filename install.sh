@@ -3,6 +3,7 @@ set -e
 
 readonly DOTFILES_EXCLUDES=(".git" ".gitignore") # 無視したいファイルやディレクトリ
 readonly DOTFILES_DIRECTORY="${HOME}/dotfiles"
+readonly DOTFILES_BACKUP_DIRECTORY="${HOME}/dotfiles_backup"
 readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/master"
 readonly REMOTE_URL="git@github.com:halka-x86/dotfiles.git"
 readonly CONFIG_DIR=".config"
@@ -11,29 +12,26 @@ function usage() {
   name=$(basename $0)
   cat <<_EOT_
 Usage:
-  $name [Options] [Command]
-Commands:
-  deploy
-  initialize
+  $name [Options]
 Options:
   -f $(tput setaf 1)** warning **$(tput sgr0) Overwrite dotfiles.
+  -g Using git.
   -h Print help (this message)
 
 _EOT_
   exit 1
 }
 
-# オプション解析 (-f:上書き -h:ヘルプ表示)
-while getopts ":fh" opt; do
+# オプション解析 (-f:上書き -g:gitを使用する -h:ヘルプ表示)
+while getopts ":fgh" opt; do
   case ${opt} in
   f) readonly OVERWRITE=true ;;
+  g) readonly GIT=true ;;
   h) usage ;;
+  *) usage ;;
   esac
 done
 shift $((OPTIND - 1))
-
-# 引数がなければヘルプ
-[ $# -lt 1 ] && usage
 
 # Dotfilesがない、あるいは上書きオプションがあればダウンロード
 if [ -n "${OVERWRITE}" -o ! -d ${DOTFILES_DIRECTORY} ]; then
@@ -41,10 +39,15 @@ if [ -n "${OVERWRITE}" -o ! -d ${DOTFILES_DIRECTORY} ]; then
   rm -rf ${DOTFILES_DIRECTORY}
   mkdir ${DOTFILES_DIRECTORY}
 
-  # curlでダウンロード
-  curl -fsSLo ${HOME}/dotfiles.tar.gz ${DOTFILES_TARBALL}
-  tar -zxf ${HOME}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_DIRECTORY}
-  rm -f ${HOME}/dotfiles.tar.gz
+  # gitオプションが使用されているかつgitインストール済みであればgitでダウンロード
+  if [-n "${GIT}" -a type "git" >/dev/null 2>&1]; then
+    git clone --recursive "${REMOTE_URL}" "${DOTFILES_DIRECTORY}"
+  else
+    # curlでダウンロード
+    curl -fsSLo ${HOME}/dotfiles.tar.gz ${DOTFILES_TARBALL}
+    tar -zxf ${HOME}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_DIRECTORY}
+    rm -f ${HOME}/dotfiles.tar.gz
+  fi
 
   echo $(tput setaf 2)Download dotfiles complete!. ✔︎$(tput sgr0)
 fi
@@ -81,9 +84,8 @@ command=$1
 
 # 引数で場合分け
 case $command in
-deploy) deploy ;;
-init*) initialize ;;
-*) usage ;;
+  init*) initialize ;;
+  *) deploy ;;
 esac
 
 exit 0
