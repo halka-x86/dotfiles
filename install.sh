@@ -1,12 +1,14 @@
 #!/bin/bash
 set -e
 
-readonly DOTFILES_EXCLUDES=(".git" ".gitignore") # 無視したいファイルやディレクトリ
-readonly DOTFILES_DIRECTORY="${HOME}/dotfiles"
-readonly DOTFILES_BACKUP_DIRECTORY="${HOME}/dotfiles_backup"
 readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/master"
 readonly REMOTE_URL="git@github.com:halka-x86/dotfiles.git"
-readonly CONFIG_DIR=".config"
+readonly DOTFILES_DIRECTORY="${HOME}/dotfiles" # ホームディレクトリに展開
+readonly SHELL_INITIALIZE="${DOTFILES_DIRECTORY}/initialize.sh"
+readonly SHELL_DEPLOY="${DOTFILES_DIRECTORY}/deploy.sh"
+
+################################################################################
+# Usage
 
 function usage() {
   name=$(basename $0)
@@ -17,30 +19,22 @@ Options:
   -f $(tput setaf 1)** warning **$(tput sgr0) Overwrite dotfiles.
   -g Using git.
   -h Print help (this message)
-
 _EOT_
-  exit 1
 }
 
-# オプション解析 (-f:上書き -g:gitを使用する -h:ヘルプ表示)
-while getopts ":fgh" opt; do
-  case ${opt} in
-  f) readonly OVERWRITE=true ;;
-  g) readonly GIT=true ;;
-  h) usage ;;
-  *) usage ;;
-  esac
-done
-shift $((OPTIND - 1))
+################################################################################
+# dotfilesをダウンロード(存在する場合は上書き)
 
-# Dotfilesがない、あるいは上書きオプションがあればダウンロード
-if [ -n "${OVERWRITE}" -o ! -d ${DOTFILES_DIRECTORY} ]; then
+function download_dotfiles() {
+
   echo "Downloading dotfiles..."
+
+  # dotfileがすでに存在する場合削除
   rm -rf ${DOTFILES_DIRECTORY}
   mkdir ${DOTFILES_DIRECTORY}
 
   # gitオプションが使用されているかつgitインストール済みであればgitでダウンロード
-  if [-n "${GIT}" -a type "git" >/dev/null 2>&1]; then
+  if [-n "${USE_GIT}" ] && [ type "git" >/dev/null 2>&1 ]; then
     git clone --recursive "${REMOTE_URL}" "${DOTFILES_DIRECTORY}"
   else
     # curlでダウンロード
@@ -50,42 +44,41 @@ if [ -n "${OVERWRITE}" -o ! -d ${DOTFILES_DIRECTORY} ]; then
   fi
 
   echo $(tput setaf 2)Download dotfiles complete!. ✔︎$(tput sgr0)
-fi
 
-# Deploy処理
-deploy() {
+  return 0
+}
 
-  cd ${DOTFILES_DIRECTORY}
+################################################################################
+# main
 
-  for f in .??*; do
+main() {
 
-    # 無視したいファイルやディレクトリ
-    [[ "${DOTFILES_EXCLUDES[@]}" =~ "${f}" ]] && continue
-
-    # ホームディレクトリに同一のファイルがあれば削除
-    rm -fr ${HOME}/${f}
-
-    # シンボリックリンク作成
-    ln -snfv ${DOTFILES_DIRECTORY}/${f} ${HOME}/${f}
-
+  # オプション解析 (-f:上書き -g:gitを使用する -h:ヘルプ表示)
+  while getopts ":fgh" opt; do
+    case ${opt} in
+      f) readonly OVERWRITE=true ;;
+      g) readonly USE_GIT=true ;;
+      h) usage ;;
+      *) ;;
+    esac
   done
+  shift $((OPTIND - 1))
 
-  echo $(tput setaf 2)Deploy dotfiles complete!. ✔︎$(tput sgr0)
+  # Dotfilesがない，あるいは上書きオプションがあればダウンロード
+  if [ -n "${OVERWRITE}" ] || [ ! -d ${DOTFILES_DIRECTORY} ]; then
+    download_dotfiles
+  fi
+
+  # dotfilesダウンロード後に initialize & deploy
+  ${SHELL_INITIALIZE};
+  ${SHELL_DEPLOY};
+
+ return 0
 }
 
-# Initialize処理
-initialize() {
-  :
-}
+################################################################################
+# Entrypoint script
 
-# 引数取得
-command=$1
-[ $# -gt 0 ] && shift
-
-# 引数で場合分け
-case $command in
-  init*) initialize ;;
-  *) deploy ;;
-esac
+main
 
 exit 0

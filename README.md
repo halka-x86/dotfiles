@@ -1,22 +1,59 @@
-# dotfiles
-My dotfiles
+# halka-x86's dotfiles
+
+Deploy and Initialize for Linux(Ubuntu) and WSL(Ubuntu).
+
+## 用語
+
+- initialize
+  必要なパッケージのインストール(初回時のみ実行)．
+  `initialize.sh`に対応．
+- deploy
+  コンフィグファイルのシンボリックファイルを配置
+  `deploy.sh`に対応．
+
+## 構成
+
+dotfilesはホームディレクトリに配置される想定．
+
+```txt
+~/
+├─ dotfiles/
+│  ├ install.sh
+│  ├ initialize.sh
+│  ├ deploy.sh
+│
+├─ dotfiles_backup/   現行設定バックアップディレクトリ(デプロイにて作成)
+│  ├ YYYYMMDDHHMMSS/ バックアップ日時毎にディレクトリ作成
+│
+```
 
 ## Usage
 
+### Insall
+
+- Githubから直接ダウンロードして実行．
+  スクリプト内で`git`もしくは`curl`にてダウンロード．
+  ホームディレクトリ直下に`~/dotfiles/`が作成．
+
+```bash
+bash -c "$(curl -L raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"
 ```
-install.sh [-f] deploy
+
+- git にてダウンロードして実行
+
+```bash
+cd ~
+git clone https://github.com/halka-x86/dotfiles.git
+cd dotfiles/
+./install.sh
 ```
 
 ### Option
 
-```
+- `install.sh`
+
+```txt
 [-h] : help
-[-f] : Overwrite local dotfiles
+[-f] : ローカルに既存のdotfilesがある場合に上書き
+[-g] : gitを使用してダウンロード(デフォルトはcurl使用)
 ```
-
-## Insall
-
-```bash
-bash -c "$(curl -L raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)" -f deploy
-```
-

@@ -1,9 +1,15 @@
 .DEFAULT_GOAL := help
-INSTALL_SCRIPT := install.sh
+SCRIPT_INSTALL := ./install.sh
+SCRIPT_DEPLOY := ./deploy.sh
 
-.PHONY: init
-init:  ## init
-	./${INSTALL_SCRIPT} -h
+.PHONY: install
+install:  ## install
+	$(SCRIPT_INSTALL)
+
+.PHONY: deploy
+deploy:  ## deploy
+	$(SCRIPT_DEPLOY)
+
 
 .PHONY: help
 help:  ## Display this help screen
