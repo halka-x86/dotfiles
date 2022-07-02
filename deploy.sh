@@ -34,16 +34,16 @@ backup_current_dotfiles() {
 
     # ホームディレクトリに同一のファイルがあればバックアップディレクトリにコピー
     if [ ! -L ${HOME}/${f} ]; then
-      cp -p ${HOME}/${f} ${BACKUP_DIR}/.
+      cp -rp ${HOME}/${f} ${BACKUP_DIR}/.
     fi
 
   done
 
   # バックアップディレクトリが空なら削除
-  if [ -n "$(ls $BACKUP_DIR)" ]; then
+  if [ -z "$(ls $BACKUP_DIR)" ]; then
     rm -r $BACKUP_DIR
   else
-   echo "backup current dotfiles to ${BACKUP_DIR}"
+    echo "backup current dotfiles to ${BACKUP_DIR}"
   fi
 
   return 0
@@ -53,9 +53,6 @@ backup_current_dotfiles() {
 # Deploy処理 (ドットファイルをホームディレクトリに配置&リンク)
 
 deploy() {
-
-  echo "deploy!"
-  return 0
 
   cd ${DOTFILES_DIRECTORY}
 
