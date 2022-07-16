@@ -10,6 +10,9 @@ install:  ## install
 deploy:  ## deploy
 	$(SCRIPT_DEPLOY)
 
+.PHONY: list
+list:  ## desplay list dotofiles
+	$(SCRIPT_DEPLOY) -l
 
 .PHONY: help
 help:  ## Display this help screen

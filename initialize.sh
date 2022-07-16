@@ -17,6 +17,24 @@ _EOT_
 }
 
 ################################################################################
+# オプション解析 (-h:ヘルプ表示)
+
+while getopts ":h" opt
+do
+  case ${opt} in
+    h)  usage;
+        exit 0
+        ;;
+    *)  echo "Invalid option"
+        usage
+        exit 1
+        ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+
+################################################################################
 #  パッケージインストール
 
 # 必要なパッケージインストール
@@ -42,24 +60,11 @@ install_all_packages() {
   return 0
 }
 
+
 ################################################################################
 # main
 
 main() {
-
-  # オプション解析 (-h:ヘルプ表示)
-  while getopts ":h" opt; do
-    case ${opt} in
-      h)  usage;
-          exit 0
-          ;;
-      *)  echo "Invalid option"
-          usage
-          exit 1
-          ;;
-    esac
-  done
-  shift $((OPTIND - 1))
 
   # パッケージインストール
   install_all_packages

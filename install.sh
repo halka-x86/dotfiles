@@ -7,9 +7,9 @@ readonly DOTFILES_DIRECTORY="${HOME}/dotfiles" # ホームディレクトリに�
 readonly SHELL_INITIALIZE="${DOTFILES_DIRECTORY}/initialize.sh"
 readonly SHELL_DEPLOY="${DOTFILES_DIRECTORY}/deploy.sh"
 
+
 ################################################################################
 # Usage
-
 function usage() {
   name=$(basename $0)
   cat <<_EOT_
@@ -21,6 +21,26 @@ Options:
   -h Print help (this message)
 _EOT_
 }
+
+
+################################################################################
+# オプション解析 (-f:上書き -g:gitを使用する -h:ヘルプ表示)
+while getopts ":fgh" opt
+do
+  case ${opt} in
+    f)  readonly OVERWRITE=true ;;
+    g)  readonly USE_GIT=true ;;
+    h)  usage
+        exit 0
+        ;;
+    *)  echo "Invalid option"
+        usage
+        exit 1
+        ;;
+  esac
+done
+shift $((OPTIND - 1))
+
 
 ################################################################################
 # dotfilesをダウンロード(存在する場合は上書き)
@@ -48,21 +68,11 @@ function download_dotfiles() {
   return 0
 }
 
+
 ################################################################################
 # main
 
 main() {
-
-  # オプション解析 (-f:上書き -g:gitを使用する -h:ヘルプ表示)
-  while getopts ":fgh" opt; do
-    case ${opt} in
-      f) readonly OVERWRITE=true ;;
-      g) readonly USE_GIT=true ;;
-      h) usage ;;
-      *) ;;
-    esac
-  done
-  shift $((OPTIND - 1))
 
   # Dotfilesがない，あるいは上書きオプションがあればダウンロード
   if [ -n "${OVERWRITE}" ] || [ ! -d ${DOTFILES_DIRECTORY} ]; then
@@ -75,6 +85,7 @@ main() {
 
  return 0
 }
+
 
 ################################################################################
 # Entrypoint script
