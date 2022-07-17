@@ -1,0 +1,22 @@
+# 管理ファイルを ホワイトリスト形式にする
+
+# 最初に全階層のファイルを除外
+### all ignore ###
+/*
+/.**
+
+# 管理対象のファイルを記載
+### not ignore ###
+!/.config/
+!/.config/**
+!/.bashrc
+!/.git-completion.bash
+!/.git-prompt.sh
+!/.gitconfig
+!/deploy.sh
+!/initialize.sh
+!/install.sh
+!/Makefile
+
+!.gitignore
+!/README.md
