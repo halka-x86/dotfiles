@@ -43,6 +43,7 @@ install_essential_packages() {
     curl \
     make \
     git \
+    fish \
     ;
 
   return 0
