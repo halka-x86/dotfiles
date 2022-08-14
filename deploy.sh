@@ -89,7 +89,9 @@ deploy_excute_config_home() {
   [ "${DISPLAY_LIST_DOTFILES}" == true ] && return 0
 
   # バックアップディレクトリが空なら削除
-  [ "${DRYRUN}" != true ] && [ -z "$(ls ${BACKUP_DESTINATION_DIR})" ] && rm -r ${BACKUP_DESTINATION_DIR}
+  set +e
+  [ "${DRYRUN}" != true ] && [ -d ${BACKUP_DESTINATION_DIR} ] && rmdir -p ${BACKUP_DESTINATION_DIR} > /dev/null 2>&1
+  set -e
 
   return 0
 }
@@ -111,8 +113,8 @@ deploy_config_home() {
   if [ "${DISPLAY_LIST_DOTFILES}" != true ]; then
     [ "${DRYRUN}" == true ] && echo "[dry-run]: mkdir backup dir (${BACKUP_DESTINATION_DIR})"
     [ "${DRYRUN}" == true ] && echo "[dry-run]: mkdir deploy dir (${DEPLOY_DESTINATION_DIR})"
-    [ "${DRYRUN}" != true ] && echo mkdir -p ${BACKUP_DESTINATION_DIR}
-    [ "${DRYRUN}" != true ] && echo mkdir -p ${DEPLOY_DESTINATION_DIR}
+    [ "${DRYRUN}" != true ] && mkdir -p ${BACKUP_DESTINATION_DIR}
+    [ "${DRYRUN}" != true ] && mkdir -p ${DEPLOY_DESTINATION_DIR}
   fi
 
   cd ${DEPLOY_SOURCE_DIR}
@@ -141,7 +143,9 @@ deploy_config_home() {
   [ "${DISPLAY_LIST_DOTFILES}" == true ] && return 0
 
   # バックアップディレクトリが空なら削除
-  [ "${DRYRUN}" != true ] && [ -z "$(ls ${BACKUP_DESTINATION_DIR})" ] && rm -r ${BACKUP_DESTINATION_DIR}
+  set +e
+  [ "${DRYRUN}" != true ] && rmdir -p ${BACKUP_DESTINATION_DIR} > /dev/null 2>&1
+  set -e
 
   return 0
 }
@@ -156,7 +160,8 @@ main() {
 
   [ "${DISPLAY_LIST_DOTFILES}" == true ] && return 0
 
-  [ -d ${DOTFILES_BACKUP_DIRECTORY} ] && echo "backup current dotfiles to ${DOTFILES_BACKUP_DIRECTORY}"
+  [ -a ${DOTFILES_BACKUP_DIRECTORY} ] && echo "backup current dotfiles to ${DOTFILES_BACKUP_DIRECTORY}"
+
   echo $(tput setaf 2)Deploy dotfiles complete!. ✔︎$(tput sgr0)
 
   return 0
