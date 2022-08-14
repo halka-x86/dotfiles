@@ -41,4 +41,6 @@ else
 fi
 
 # fish を起動
-exec fish
+# if type "fish" > /dev/null 2>&1; then
+#     exec fish
+# fi
