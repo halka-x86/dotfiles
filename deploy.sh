@@ -80,8 +80,9 @@ deploy_excute_config_home() {
     fi
 
     # シンボリックリンク作成
-    [ "${DRYRUN}" == true ] && echo "[dry-run]: create a symbolic link (${DEPLOY_DESTINATION_DIR}/${f})"
-    [ "${DRYRUN}" != true ] && ln -snfv ${DOTFILES_DIRECTORY}/${f} ${DEPLOY_DESTINATION_DIR}/${f}
+    [ "${DRYRUN}" == true ] && echo "[dry-run]: create a symbolic link (${DEPLOY_DESTINATION_DIR}/${f})" \
+                            && echo "           ${DEPLOY_SOURCE_DIR}/${f} -> ${DEPLOY_DESTINATION_DIR}/${f}"
+    [ "${DRYRUN}" != true ] && ln -snfv ${DEPLOY_SOURCE_DIR}/${f} ${DEPLOY_DESTINATION_DIR}/${f}
 
   done
 
@@ -134,8 +135,9 @@ deploy_config_home() {
     fi
 
     # シンボリックリンク作成
-    [ "${DRYRUN}" == true ] && echo "[dry-run]: create a symbolic link (${DEPLOY_DESTINATION_DIR}/${f})"
-    [ "${DRYRUN}" != true ] && ln -snfv ${DOTFILES_DIRECTORY}/${f} ${DEPLOY_DESTINATION_DIR}/${f}
+    [ "${DRYRUN}" == true ] && echo "[dry-run]: create a symbolic link (${DEPLOY_DESTINATION_DIR}/${f})" \
+                            && echo "           ${DEPLOY_SOURCE_DIR}/${f} -> ${DEPLOY_DESTINATION_DIR}/${f}"
+    [ "${DRYRUN}" != true ] && ln -snfv ${DEPLOY_SOURCE_DIR}/${f} ${DEPLOY_DESTINATION_DIR}/${f}
 
   done
 
