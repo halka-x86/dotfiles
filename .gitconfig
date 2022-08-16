@@ -1,6 +1,5 @@
-[user]
-	name = halka
-	email = halkax84@gmail.com
+[include]
+	path = ~/.gitconfig.local
 [core]
 	# editor = emacs
 	quotepath = false
@@ -18,7 +17,7 @@
 	ss  = status -s
 	b   = branch
 	ba  = branch -a
-  br  = branch -r
+  	br  = branch -r
 	co  = checkout
 	cob = checkout -b
 	com = checkout master

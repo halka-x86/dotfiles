@@ -154,11 +154,44 @@ deploy_config_home() {
 
 
 ################################################################################
+# home に gitユーザファイル(gitconfig.local)を作成
+
+create_gitconfig_local() {
+
+  local -r GIT_CONFIG_LOCAL=~/.gitconfig.local
+
+  if [ ! -e $GIT_CONFIG_LOCAL ]; then
+    echo -n "git config user.email?> "
+    read GIT_AUTHOR_EMAIL
+
+    echo -n "git config user.name?> "
+    read GIT_AUTHOR_NAME
+
+    if [ "${DRYRUN}" != true ]; then
+
+      cat < $GIT_CONFIG_LOCAL
+[user]
+  name = $GIT_AUTHOR_NAME
+  email = $GIT_AUTHOR_EMAIL
+EOF
+    else
+      echo    "[dry-run]: local gitconfig (${GIT_CONFIG_LOCAL})" \
+      && echo "           [user]" \
+      && echo "             name = ${GIT_AUTHOR_NAME}" \
+      && echo "             email = ${GIT_AUTHOR_EMAIL}"
+    fi
+
+  fi
+}
+
+
+################################################################################
 # main構文
 main() {
 
   deploy_excute_config_home
   deploy_config_home
+  create_gitconfig_local
 
   [ "${DISPLAY_LIST_DOTFILES}" == true ] && return 0
 
