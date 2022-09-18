@@ -61,7 +61,7 @@ abbr -a gp   git push
 abbr -a gpo  git push origin
 abbr -a gl   git log
 abbr -a glo  git log --oneline
-abbr -a glg  git log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
+abbr -a ggr  git log --graph --date=short --pretty=format:\'%Cgreen%h %cd %Cblue%cn %Creset%s\'
 abbr -a gr   git reset HEAD
 abbr -a gr1  git reset HEAD~
 abbr -a gr2  git reset HEAD~~
