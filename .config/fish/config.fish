@@ -35,3 +35,40 @@ end
 function fish_right_prompt
     date +"%Y/%m/%d %H:%M"
 end
+
+# abbr
+## git
+abbr -a g    git
+abbr -a gs   git status
+abbr -a gss  git status -s
+abbr -a gb   git branch
+abbr -a gba  git branch -a
+abbr -a gbr  git branch -r
+abbr -a gco  git checkout
+abbr -a gcob git checkout -b
+abbr -a ga   git add
+abbr -a gau  git add --update
+abbr -a gaa  git add --all
+abbr -a gcm  git commit
+abbr -a gcmm git commit -m
+abbr -a gcma git commit --amend
+abbr -a gf   git fetch
+abbr -a gfp  git fetch --prune
+abbr -a gp   git push
+abbr -a gpo  git push origin
+abbr -a gl   git log
+abbr -a glo  git log --oneline
+abbr -a glg  git log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
+abbr -a gr   git reset HEAD
+abbr -a gr1  git reset HEAD~
+abbr -a gr2  git reset HEAD~~
+abbr -a gr3  git reset HEAD~~
+abbr -a grs  git reset --soft HEAD
+abbr -a grs1 git reset --soft HEAD~
+abbr -a grs2 git reset --soft HEAD~~
+abbr -a grs3 git reset --soft HEAD~~~
+abbr -a gd   git diff
+abbr -a gd1  git diff HEAD~
+abbr -a gd2  git diff HEAD~~
+abbr -a gd3  git diff HEAD~~~
+abbr -a gg git grep
