@@ -37,6 +37,9 @@ function fish_right_prompt
 end
 
 # abbr
+
+abbr -a upd  "sudo apt update && sudo apt upgrade -y && apt autoremove -y"
+
 ## git
 abbr -a g    git
 abbr -a gs   git status
