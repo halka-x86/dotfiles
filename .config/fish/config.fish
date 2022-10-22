@@ -38,7 +38,7 @@ end
 
 # abbr
 
-abbr -a upd  "sudo apt update && sudo apt upgrade -y && apt autoremove -y"
+abbr -a upd  "sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y"
 
 ## git
 abbr -a g    git
