@@ -8,7 +8,8 @@
 # 管理対象のファイルを記載
 ### not ignore ###
 !/.config/
-!/.config/**
+!/.config/fish/config.fish
+!/.config/fish/poetry.fish
 !/.bashrc
 !/.git-completion.bash
 !/.git-prompt.sh
