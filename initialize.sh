@@ -49,12 +49,22 @@ install_essential_packages() {
   return 0
 }
 
+# python関連インストール
+install_python_packages() {
+
+  # poetry
+  curl -sSL https://install.python-poetry.org | python3 -
+
+  return 0
+}
+
 # すべてのパッケージインストール
 install_all_packages() {
 
   echo "Install packages..."
 
   install_essential_packages
+  install_python_packages
 
   echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
 
