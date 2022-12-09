@@ -36,10 +36,11 @@ function fish_right_prompt
     date +"%Y/%m/%d %H:%M"
 end
 
+# PATH
+fish_add_path $HOME/.local/bin
+
 # abbr
-
 abbr -a upd  "sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y"
-
 ## git
 abbr -a g    git
 abbr -a gs   git status
