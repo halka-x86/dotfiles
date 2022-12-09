@@ -39,6 +39,11 @@ shift $((OPTIND - 1))
 
 # 必要なパッケージインストール
 install_essential_packages() {
+
+  # add repository
+  sudo apt-add-repository ppa:fish-shell/release-3
+
+  # install packages
   sudo apt install \
     curl \
     make \
