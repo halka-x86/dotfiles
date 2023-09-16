@@ -22,24 +22,28 @@ dotfilesはホームディレクトリに配置される想定．
 │  ├ initialize.sh
 │  ├ deploy.sh
 │
-├─ dotfiles_backup/   現行設定バックアップディレクトリ(デプロイにて作成)
-│  ├ YYYYMMDDHHMMSS/ バックアップ日時毎にディレクトリ作成
-│
+├─ dotfiles_backup/    ...現行設定バックアップディレクトリ(デプロイにて作成)
+    ├ YYYYMMDDHHMMSS/    ...バックアップ日時毎にディレクトリ作成
+
 ```
 
 ## Usage
 
 ### Insall
 
-- Githubから直接ダウンロードして実行．
-  スクリプト内で`git`もしくは`curl`にてダウンロード．
-  ホームディレクトリ直下に`~/dotfiles/`が作成．
+#### Githubから直接ダウンロードして実行．
+
+スクリプト内で`git`もしくは`curl`にてダウンロード．  
+ホームディレクトリ直下に`~/dotfiles/`が作成．
 
 ```bash
-bash -c "$(curl -L raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"
+bash -c "$(curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"
+
+# fishで実行する場合は以下のコマンド
+curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh | bash 
 ```
 
-- git にてダウンロードして実行
+#### git にてダウンロードして実行
 
 ```bash
 cd ~
@@ -48,12 +52,42 @@ cd dotfiles/
 ./install.sh
 ```
 
-### Option
+## Script
 
-- `install.sh`
+- `install.sh`    ... dotfilesのダウンロードから initialize, deploy まで一貫して実行
+- `initialize.sh` ... パッケージのインストールを実行
+- `deploy.sh`     ... dotfiles のシンボリックリンクを作成
 
-```txt
-[-h] : help
+
+
+### `install.sh`
+
+dotfiles のダンロードからデプロイまで全てを行う．  
+dotfiles を GitHub からダウンロード後，他のスクリプト `initialize.sh`および `deploy.sh`を実行する．
+
+```txt:Option
+[-h] : ヘルプ表示
 [-f] : ローカルに既存のdotfilesがある場合に上書き
 [-g] : gitを使用してダウンロード(デフォルトはcurl使用)
+```
+
+
+### `initialize.sh`
+
+ソフトウェアのインストールを実行．  
+
+```txt:Option
+[-h] : ヘルプ表示
+```
+
+
+### `deploy.sh`
+
+dotfiles のシンボリックリンクを作成．  
+既にコンフィグファイルがある場合には `~/dotfiles_backup/` 下にバックアップされる．
+
+```txt:Option
+[-h] : ヘルプ表示
+[-l] : 展開するdotfilesファイル群をリスト表示
+[-n] : dyr-run
 ```
