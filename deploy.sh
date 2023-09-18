@@ -17,20 +17,20 @@ Usage:
 Options:
   -h Print help (this message)
   -l Display list dotfiles
-  -n dry-run
+  -d dry-run
 _EOT_
 }
 
 
 ################################################################################
-# オプション解析 (-h:ヘルプ表示  -l:デプロイ対象リスト表示  -n:ドライラン)
+# オプション解析 (-h:ヘルプ表示  -l:デプロイ対象リスト表示  -d:ドライラン)
 
-while getopts ":lnh" opt
+while getopts ":ldh" opt
 do
   case ${opt} in
     l)  readonly DISPLAY_LIST_DOTFILES=true
         ;;
-    n)  readonly DRYRUN=true
+    d)  readonly DRYRUN=true
         ;;
     h)  usage
         exit 0
@@ -158,30 +158,35 @@ deploy_config_home() {
 
 create_gitconfig_local() {
 
-  local -r GIT_CONFIG_LOCAL=~/.gitconfig.local
+  local -r GIT_CONFIG_LOCAL="${HOME}/.gitconfig.local"
 
-  if [ ! -e ${GIT_CONFIG_LOCAL} ]; then
-    echo -n "git config user.email?> "
-    read GIT_AUTHOR_EMAIL
+  # .gitconfig.local ファイルが存在する場合は作成不要
+  [ -e ${GIT_CONFIG_LOCAL} ] && return 0
 
-    echo -n "git config user.name?> "
-    read GIT_AUTHOR_NAME
+  # オプションでリスト表示が指定されていたら表示のみ行う
+  if [ "${DISPLAY_LIST_DOTFILES}" == true ]; then
+    echo "- .gitconfig.local"
+    return 0
+  fi
 
-    if [ "${DRYRUN}" != true ]; then
+  # dyr-run オプション指定
+  if [ "${DRYRUN}" == true  ]; then
+    echo "[dry-run]: local gitconfig (${GIT_CONFIG_LOCAL})"
+    return 0
+  fi
 
-      cat << EOF > ${GIT_CONFIG_LOCAL}
+  # 対話式にコンフィグ内容を入力
+  echo -n "git config user.email?> "
+  read GIT_AUTHOR_EMAIL
+  echo -n "git config user.name?> "
+  read GIT_AUTHOR_NAME
+
+  # cat のリダイレクトにてファイルを作成
+  cat << EOF > ${GIT_CONFIG_LOCAL}
 [user]
   name = $GIT_AUTHOR_NAME
   email = $GIT_AUTHOR_EMAIL
 EOF
-    else
-      echo    "[dry-run]: local gitconfig (${GIT_CONFIG_LOCAL})" \
-      && echo "           [user]" \
-      && echo "             name = ${GIT_AUTHOR_NAME}" \
-      && echo "             email = ${GIT_AUTHOR_EMAIL}"
-    fi
-
-  fi
 }
 
 

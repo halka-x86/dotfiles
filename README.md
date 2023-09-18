@@ -90,5 +90,5 @@ dotfiles のシンボリックリンクを作成．
 ```txt:Option
 [-h] : ヘルプ表示
 [-l] : 展開するdotfilesファイル群をリスト表示
-[-n] : dyr-run
+[-d] : dyr-run
 ```
