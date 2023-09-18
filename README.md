@@ -36,11 +36,12 @@ dotfilesはホームディレクトリに配置される想定．
 スクリプト内で`git`もしくは`curl`にてダウンロード．  
 ホームディレクトリ直下に`~/dotfiles/`が作成．
 
-```bash
+```bash:bash
 bash -c "$(curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"
+```
 
-# fishで実行する場合は以下のコマンド
-curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh | bash 
+```bash:fish
+bash -c 'sudo -E bash -c "$(curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"'
 ```
 
 #### git にてダウンロードして実行
