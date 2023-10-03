@@ -37,7 +37,7 @@ dotfilesはホームディレクトリに配置される想定．
 ホームディレクトリ直下に`~/dotfiles/`が作成．
 
 ```bash:bash
-bash -c "$(curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"
+sudo -E bash -c "$(curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"
 ```
 
 ```bash:fish
@@ -69,6 +69,7 @@ dotfiles を GitHub からダウンロード後，他のスクリプト `initial
 ```txt:Option
 [-h] : ヘルプ表示
 [-f] : ローカルに既存のdotfilesがある場合に上書き
+[-b] : fish のインストールを行わない
 [-g] : gitを使用してダウンロード(デフォルトはcurl使用)
 ```
 
@@ -78,6 +79,7 @@ dotfiles を GitHub からダウンロード後，他のスクリプト `initial
 ソフトウェアのインストールを実行．  
 
 ```txt:Option
+[-b] : fish のインストールを行わない
 [-h] : ヘルプ表示
 ```
 

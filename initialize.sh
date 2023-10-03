@@ -10,6 +10,7 @@ function usage() {
 Usage:
   $name [Options]
 Options:
+  -b install without fish
   -h Print help (this message)
 _EOT_
 
@@ -19,9 +20,10 @@ _EOT_
 ################################################################################
 # オプション解析 (-h:ヘルプ表示)
 
-while getopts ":h" opt
+while getopts ":bh" opt
 do
   case ${opt} in
+    b)  readonly WITHOUT_FISH=true ;;
     h)  usage;
         exit 0
         ;;
@@ -40,38 +42,23 @@ shift $((OPTIND - 1))
 # 必要なパッケージインストール
 install_essential_packages() {
 
-  # add repository
-  apt-add-repository ppa:fish-shell/release-3
-
   # install packages
   apt install \
-    curl \
     make \
     git \
-    fish \
     ;
 
   return 0
 }
 
-# python関連インストール
-install_python_packages() {
+# fishインストール
+install_fish_packages() {
 
-  # poetry
-  curl -sSL https://install.python-poetry.org | python3 -
+  # add repository
+  apt-add-repository ppa:fish-shell/release-3
 
-  return 0
-}
-
-# すべてのパッケージインストール
-install_all_packages() {
-
-  echo "Install packages..."
-
-  install_essential_packages
-  install_python_packages
-
-  echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
+  # install packages
+  apt install fish;
 
   return 0
 }
@@ -82,8 +69,15 @@ install_all_packages() {
 
 main() {
 
-  # パッケージインストール
-  install_all_packages
+  echo "Install packages..."
+
+  install_essential_packages
+
+  if [ -z "${WITHOUT_FISH}" ]; then
+    install_fish_packages
+  fi
+
+  echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
 
   return 0
 }

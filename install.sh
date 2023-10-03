@@ -18,18 +18,20 @@ Usage:
 Options:
   -f $(tput setaf 1)** warning **$(tput sgr0) Overwrite dotfiles.
   -g Using git.
+  -b install without fish
   -h Print help (this message)
 _EOT_
 }
 
 
 ################################################################################
-# オプション解析 (-f:上書き -g:gitを使用する -h:ヘルプ表示)
-while getopts ":fgh" opt
+# オプション解析 (-f:上書き -g:gitを使用する -b:fishはインストールから除外する -h:ヘルプ表示)
+while getopts ":fgbh" opt
 do
   case ${opt} in
     f)  readonly OVERWRITE=true ;;
     g)  readonly USE_GIT=true ;;
+    b)  readonly WITHOUT_FISH=true ;;
     h)  usage
         exit 0
         ;;
@@ -79,8 +81,11 @@ main() {
     download_dotfiles
   fi
 
+  if [ -n "${WITHOUT_FISH}" ]; then
+    readonly OPT_SHELL_INITIALIZE="-b"
+  fi
   # dotfilesダウンロード後に initialize & deploy
-  ${SHELL_INITIALIZE};
+  ${SHELL_INITIALIZE} ${OPT_SHELL_INITIALIZE};
   ${SHELL_DEPLOY};
 
  return 0
