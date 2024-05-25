@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/master"
+# readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/master"
+readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/develop"
 readonly REMOTE_URL="git@github.com:halka-x86/dotfiles.git"
 readonly DOTFILES_DIRECTORY="${HOME}/dotfiles" # ホームディレクトリに展開
 readonly SHELL_INITIALIZE="${DOTFILES_DIRECTORY}/initialize.sh"
