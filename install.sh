@@ -59,7 +59,7 @@ function download_dotfiles() {
     git clone --recursive "${REMOTE_URL}" "${DOTFILES_DIRECTORY}"
   else
     # curlでダウンロード
-    curl -fsSLo --insecure ${HOME}/dotfiles.tar.gz ${DOTFILES_TARBALL}
+    curl -kfsSLo ${HOME}/dotfiles.tar.gz ${DOTFILES_TARBALL}
     tar -zxf ${HOME}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_DIRECTORY}
     rm -f ${HOME}/dotfiles.tar.gz
   fi
