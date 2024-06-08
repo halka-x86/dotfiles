@@ -5,8 +5,8 @@ set -e
 readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/develop"
 readonly REMOTE_URL="git@github.com:halka-x86/dotfiles.git"
 readonly DOTFILES_EXCLUDES=(".git" ".gitignore" ".vscode")   # 無視したいファイルやディレクトリ
-# readonly DOTFILES_DIRECTORY="${HOME}/dotfiles"               # ホームディレクトリに展開
-# readonly DOTFILES_BACKUP_DIRECTORY="${HOME}/dotfiles_backup" # 現行の設定のバックアップ保存先
+readonly DOTFILES_DIRECTORY="${HOME}/dotfiles"               # ホームディレクトリに展開
+readonly DOTFILES_BACKUP_DIRECTORY="${HOME}/dotfiles_backup" # 現行の設定のバックアップ保存先
 
 
 ################################################################################
