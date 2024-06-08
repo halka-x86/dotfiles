@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eu
+set -e
 
 # readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/master"
 readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/develop"
