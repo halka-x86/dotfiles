@@ -4,9 +4,9 @@ set -e
 # readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/master"
 readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/develop"
 readonly REMOTE_URL="git@github.com:halka-x86/dotfiles.git"
-readonly DOTFILES_DIRECTORY="${HOME}/dotfiles" # ホームディレクトリに展開
-readonly SHELL_INITIALIZE="${DOTFILES_DIRECTORY}/initialize.sh"
-readonly SHELL_DEPLOY="${DOTFILES_DIRECTORY}/deploy.sh"
+readonly DOTFILES_EXCLUDES=(".git" ".gitignore" ".vscode")   # 無視したいファイルやディレクトリ
+# readonly DOTFILES_DIRECTORY="${HOME}/dotfiles"               # ホームディレクトリに展開
+# readonly DOTFILES_BACKUP_DIRECTORY="${HOME}/dotfiles_backup" # 現行の設定のバックアップ保存先
 
 
 ################################################################################
@@ -71,6 +71,73 @@ function download_dotfiles() {
 
 
 ################################################################################
+#  パッケージインストール
+
+# 必要なパッケージインストール
+install_essential_packages() {
+  sudo apt install \
+    curl \
+    make \
+    git \
+    ;
+
+  return 0
+}
+
+# すべてのパッケージインストール
+install_all_packages() {
+
+  echo "Install packages..."
+
+  install_essential_packages
+
+  echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
+
+  return 0
+}
+
+
+################################################################################
+# Deploy処理 (ドットファイルをホームディレクトリに配置&リンク)
+
+deploy() {
+
+  cd ${DOTFILES_DIRECTORY}
+
+  # 実行日時を名前としたバックアップディレクトリを作成
+  readonly BACKUP_DIR="${DOTFILES_BACKUP_DIRECTORY}/$(date +%Y%m%d%H%M%S)"
+  mkdir -p ${BACKUP_DIR}
+
+  for f in .??*; do
+
+    # 無視したいファイルやディレクトリ
+    [[ "${DOTFILES_EXCLUDES[@]}" =~ "${f}" ]] && continue
+
+    # ホームディレクトリに同一のファイルがあればバックアップディレクトリに移動
+    if [ ! -L ${HOME}/${f} ]; then
+      mv ${HOME}/${f} ${BACKUP_DIR}/
+    fi
+
+    # シンボリックリンク作成
+    ln -snfv ${DOTFILES_DIRECTORY}/${f} ${HOME}/${f}
+
+  done
+
+  # バックアップディレクトリが空なら削除
+  if [ -z "$(ls $BACKUP_DIR)" ]; then
+    rm -r $BACKUP_DIR
+  else
+    echo "backup current dotfiles to ${BACKUP_DIR}"
+  fi
+
+  echo $(tput setaf 2)Deploy dotfiles complete!. ✔︎$(tput sgr0)
+
+  return 0
+}
+
+
+
+################################################################################
 # main
 
 main() {
@@ -80,9 +147,11 @@ main() {
     download_dotfiles
   fi
 
-  # dotfilesダウンロード後に initialize & deploy
-  ${SHELL_INITIALIZE};
-  ${SHELL_DEPLOY};
+  # パッケージインストール
+  install_all_packages
+
+  # ドットファイルのシンボリックリンク作成
+  deploy
 
  return 0
 }
