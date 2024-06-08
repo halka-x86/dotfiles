@@ -75,7 +75,7 @@ function download_dotfiles() {
 
 # 必要なパッケージインストール
 install_essential_packages() {
-  apt install \
+  apt install -y \
     curl \
     make \
     git \
