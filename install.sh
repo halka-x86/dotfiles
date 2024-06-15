@@ -75,21 +75,13 @@ function download_dotfiles() {
 
 # 必要なパッケージインストール
 install_essential_packages() {
-  apt install -y \
+  echo "Install packages..."
+
+  apt-get install -y \
     curl \
     make \
     git \
     ;
-
-  return 0
-}
-
-# すべてのパッケージインストール
-install_all_packages() {
-
-  echo "Install packages..."
-
-  install_essential_packages
 
   echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
 
@@ -107,6 +99,12 @@ deploy() {
   # 実行日時を名前としたバックアップディレクトリを作成
   readonly BACKUP_DIR="${DOTFILES_BACKUP_DIRECTORY}/$(date +%Y%m%d%H%M%S)"
   mkdir -p ${BACKUP_DIR}
+
+  # .config ディレクトリがなければ作成
+  if [ ! -d ${HOME}/.config ]; then
+    mkdir .config
+  fi
+
 
   for f in .??*; do
 
@@ -142,13 +140,13 @@ deploy() {
 
 main() {
 
+  # 必要なパッケージをインストール
+  install_essential_packages
+
   # Dotfilesがない，あるいは上書きオプションがあればダウンロード
   if [ -n "${OVERWRITE}" ] || [ ! -d ${DOTFILES_DIRECTORY} ]; then
     download_dotfiles
   fi
-
-  # パッケージインストール
-  install_all_packages
 
   # ドットファイルのシンボリックリンク作成
   deploy
