@@ -112,7 +112,7 @@ deploy() {
     [[ "${DOTFILES_EXCLUDES[@]}" =~ "${f}" ]] && continue
 
     # ホームディレクトリに同一のファイルがあればバックアップディレクトリに移動
-    if [ ! -L ${HOME}/${f} ]; then
+    if [ -f ${HOME}/${f} ] || [ -L ${HOME}/${f} ]; then
       mv ${HOME}/${f} ${BACKUP_DIR}/
     fi
 
