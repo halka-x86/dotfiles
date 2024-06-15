@@ -100,12 +100,6 @@ deploy() {
   readonly BACKUP_DIR="${DOTFILES_BACKUP_DIRECTORY}/$(date +%Y%m%d%H%M%S)"
   mkdir -p ${BACKUP_DIR}
 
-  # .config ディレクトリがなければ作成
-  if [ ! -d ${HOME}/.config ]; then
-    mkdir ${HOME}/.config
-  fi
-
-
   for f in .??*; do
 
     # 無視したいファイルやディレクトリ
