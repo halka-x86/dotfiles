@@ -102,7 +102,7 @@ deploy() {
 
   # .config ディレクトリがなければ作成
   if [ ! -d ${HOME}/.config ]; then
-    mkdir .config
+    mkdir ${HOME}/.config
   fi
 
 
