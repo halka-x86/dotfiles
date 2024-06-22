@@ -77,10 +77,24 @@ function download_dotfiles() {
 install_essential_packages() {
   echo "Install packages..."
 
+  DEBIAN_FRONTEND=noninteractive \
   apt-get install -y \
     curl \
     make \
     git \
+    ;
+
+  echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
+
+  return 0
+}
+
+install_fish_packages() {
+  echo "Install fisf packages..."
+
+  DEBIAN_FRONTEND=noninteractive \
+  apt-get install -y \
+    fish \
     ;
 
   echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
@@ -136,6 +150,9 @@ main() {
 
   # 必要なパッケージをインストール
   install_essential_packages
+
+  # fishパッケージをインストール
+  install_fish_packages
 
   # Dotfilesがない，あるいは上書きオプションがあればダウンロード
   if [ -n "${OVERWRITE}" ] || [ ! -d ${DOTFILES_DIRECTORY} ]; then
