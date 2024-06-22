@@ -6,10 +6,8 @@ Deploy and Initialize for Linux(Ubuntu) and WSL(Ubuntu).
 
 - initialize
   必要なパッケージのインストール(初回時のみ実行)．
-  `initialize.sh`に対応．
 - deploy
   コンフィグファイルのシンボリックファイルを配置
-  `deploy.sh`に対応．
 
 ## 構成
 
@@ -19,8 +17,6 @@ dotfilesはホームディレクトリに配置される想定．
 ~/
 ├─ dotfiles/
 │  ├ install.sh
-│  ├ initialize.sh
-│  ├ deploy.sh
 │
 ├─ dotfiles_backup/   現行設定バックアップディレクトリ(デプロイにて作成)
 │  ├ YYYYMMDDHHMMSS/ バックアップ日時毎にディレクトリ作成
