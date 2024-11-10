@@ -12,6 +12,12 @@
 	branch = auto
 	interactive = auto
 	grep = auto
+
+[color "branch"]
+    # current = green
+    # local = white
+    remote = blue
+
 [alias]
 	s   = status
 	ss  = status -s
