@@ -45,13 +45,13 @@ set fish_color_command        \#6495ed
 # set fish_color_comment        brblack
 # set fish_color_cwd            brred
 # set fish_color_end            brwhite
-set fish_color_error          \#dc5c34
+set fish_color_error           yellow #\#dc5c34
 # set fish_color_escape         brcyan
 # set fish_color_host           brgreen
 # set fish_color_host_remote    bryellow
 # set fish_color_match          brcyan --underline
 # set fish_color_operator       brpurple
-# set fish_color_param          brred
+set fish_color_param          brgreen
 # set fish_color_quote          brgreen
 # set fish_color_redirection    brcyan
 # set fish_color_search_match   --background=brblack
@@ -70,9 +70,10 @@ set fish_color_error          \#dc5c34
 # set fish_pager_color_selected_prefix       bryello
 
 # PATH
-fish_add_path $HOME/.local/bin
+# fish_add_path $HOME/.local/bin
 
 # abbr
+## update pacages
 abbr -a upd  "sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y"
 ## git
 abbr -a g    git
