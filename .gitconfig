@@ -13,6 +13,14 @@
 	interactive = auto
 	grep = auto
 
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+
+[color "diff"]
+	old = cyan
+
 [color "branch"]
     # current = green
     # local = white
