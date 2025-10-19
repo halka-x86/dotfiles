@@ -3,9 +3,9 @@ set -e
 
 readonly DOTFILES_TARBALL="https://github.com/halka-x86/dotfiles/tarball/master"
 readonly REMOTE_URL="git@github.com:halka-x86/dotfiles.git"
-readonly DOTFILES_DIRECTORY="${HOME}/dotfiles" # ホームディレクトリに展開
-readonly SHELL_INITIALIZE="${DOTFILES_DIRECTORY}/initialize.sh"
-readonly SHELL_DEPLOY="${DOTFILES_DIRECTORY}/deploy.sh"
+readonly DOTFILES_EXCLUDES=(".git" ".gitignore" ".vscode")   # 無視したいファイルやディレクトリ
+readonly DOTFILES_DIRECTORY="${HOME}/dotfiles"               # ホームディレクトリに展開
+readonly DOTFILES_BACKUP_DIRECTORY="${HOME}/dotfiles_backup" # 現行の設定のバックアップ保存先
 
 
 ################################################################################
@@ -56,11 +56,11 @@ function download_dotfiles() {
   mkdir ${DOTFILES_DIRECTORY}
 
   # gitオプションが使用されているかつgitインストール済みであればgitでダウンロード
-  if [-n "${USE_GIT}" ] && [ type "git" >/dev/null 2>&1 ]; then
+  if [ -n "${USE_GIT}" ] && [ type "git" >/dev/null 2>&1 ]; then
     git clone --recursive "${REMOTE_URL}" "${DOTFILES_DIRECTORY}"
   else
     # curlでダウンロード
-    curl -fsSLo ${HOME}/dotfiles.tar.gz ${DOTFILES_TARBALL}
+    curl -kfsSLo ${HOME}/dotfiles.tar.gz ${DOTFILES_TARBALL}
     tar -zxf ${HOME}/dotfiles.tar.gz --strip-components 1 -C ${DOTFILES_DIRECTORY}
     rm -f ${HOME}/dotfiles.tar.gz
   fi
@@ -72,21 +72,96 @@ function download_dotfiles() {
 
 
 ################################################################################
+#  パッケージインストール
+
+# 必要なパッケージインストール
+install_essential_packages() {
+  echo "Install packages..."
+
+  DEBIAN_FRONTEND=noninteractive \
+  apt-get install -y \
+    curl \
+    make \
+    git \
+    ;
+
+  echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
+
+  return 0
+}
+
+install_fish_packages() {
+  echo "Install fisf packages..."
+
+  DEBIAN_FRONTEND=noninteractive \
+  apt-get install -y \
+    fish \
+    ;
+
+  echo "$(tput setaf 2)Installed packages complete!. ✔︎$(tput sgr0)"
+
+  return 0
+}
+
+
+################################################################################
+# Deploy処理 (ドットファイルをホームディレクトリに配置&リンク)
+
+deploy() {
+
+  cd ${DOTFILES_DIRECTORY}
+
+  # 実行日時を名前としたバックアップディレクトリを作成
+  readonly BACKUP_DIR="${DOTFILES_BACKUP_DIRECTORY}/$(date +%Y%m%d%H%M%S)"
+  mkdir -p ${BACKUP_DIR}
+
+  for f in .??*; do
+
+    # 無視したいファイルやディレクトリ
+    [[ "${DOTFILES_EXCLUDES[@]}" =~ "${f}" ]] && continue
+
+    # ホームディレクトリに同一のファイルがあればバックアップディレクトリに移動
+    if [ -f ${HOME}/${f} ] || [ -L ${HOME}/${f} ]; then
+      mv ${HOME}/${f} ${BACKUP_DIR}/
+    fi
+
+    # シンボリックリンク作成
+    ln -snfv ${DOTFILES_DIRECTORY}/${f} ${HOME}/${f}
+
+  done
+
+  # バックアップディレクトリが空なら削除
+  if [ -z "$(ls $BACKUP_DIR)" ]; then
+    rm -r $BACKUP_DIR
+  else
+    echo "backup current dotfiles to ${BACKUP_DIR}"
+  fi
+
+  echo $(tput setaf 2)Deploy dotfiles complete!. ✔︎$(tput sgr0)
+
+  return 0
+}
+
+
+
+################################################################################
 # main
 
 main() {
+
+  # 必要なパッケージをインストール
+  install_essential_packages
+
+  # fishパッケージをインストール
+  install_fish_packages
 
   # Dotfilesがない，あるいは上書きオプションがあればダウンロード
   if [ -n "${OVERWRITE}" ] || [ ! -d ${DOTFILES_DIRECTORY} ]; then
     download_dotfiles
   fi
 
-  if [ -n "${WITHOUT_FISH}" ]; then
-    readonly OPT_SHELL_INITIALIZE="-b"
-  fi
-  # dotfilesダウンロード後に initialize & deploy
-  ${SHELL_INITIALIZE} ${OPT_SHELL_INITIALIZE};
-  ${SHELL_DEPLOY};
+  # ドットファイルのシンボリックリンク作成
+  deploy
 
  return 0
 }
