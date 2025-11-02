@@ -17,6 +17,7 @@ Usage:
   $name [Options]
 Options:
   -f $(tput setaf 1)** warning **$(tput sgr0) Overwrite dotfiles.
+  -d Deploy only (without install package)
   -g Using git.
   -b install without fish
   -h Print help (this message)
@@ -26,10 +27,11 @@ _EOT_
 
 ################################################################################
 # オプション解析 (-f:上書き -g:gitを使用する -b:fishはインストールから除外する -h:ヘルプ表示)
-while getopts ":fgbh" opt
+while getopts ":fdgbh" opt
 do
   case ${opt} in
     f)  readonly OVERWRITE=true ;;
+    d)  readonly DEPLOY_ONLY=true ;;
     g)  readonly USE_GIT=true ;;
     b)  readonly WITHOUT_FISH=true ;;
     h)  usage
@@ -149,11 +151,15 @@ deploy() {
 
 main() {
 
-  # 必要なパッケージをインストール
-  install_essential_packages
+  # 必要なパッケージをインストール(デプロイのみのオプションがない場合)
+  if [ -z "${DEPLOY_ONLY}" ]; then
+    install_essential_packages
+  fi
 
-  # fishパッケージをインストール
-  install_fish_packages
+  # fishパッケージをインストール(デプロイのみ及びfish除外のオプションがない場合)
+  if [ -z "${DEPLOY_ONLY}" ] && [ -z "${WITHOUT_FISH}" ]; then
+    install_fish_packages
+  fi
 
   # Dotfilesがない，あるいは上書きオプションがあればダウンロード
   if [ -n "${OVERWRITE}" ] || [ ! -d ${DOTFILES_DIRECTORY} ]; then
@@ -163,7 +169,7 @@ main() {
   # ドットファイルのシンボリックリンク作成
   deploy
 
- return 0
+  return 0
 }
 
 
