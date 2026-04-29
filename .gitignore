@@ -18,6 +18,8 @@
 !/initialize.sh
 !/install.sh
 !/Makefile
+!/.claude/
+!/.claude/CLAUDE.md
 
 !.gitignore
 !/README.md
