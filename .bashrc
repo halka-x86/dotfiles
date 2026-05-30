@@ -1,6 +1,9 @@
 # 日本語対応
 export LANG='ja_JP.UTF-8'
 
+# 主に git log の日本語出力用にLessの文字コードにUTF-8を指定
+export LESSCHARSET=utf-8
+
 # ls 結果の色設定 + ls系のエイリアス
 export LS_OPTIONS='--color=auto'
 alias ls='ls $LS_OPTIONS'
