@@ -1,25 +1,40 @@
 # 管理ファイルを ホワイトリスト形式にする
 
-# 最初に全階層のファイルを除外
+# 最初に全てのファイルを除外
 ### all ignore ###
 /*
 /.**
 
 # 管理対象のファイルを記載
 ### not ignore ###
-!/.config/
-!/.config/fish/config.fish
-!/.config/fish/poetry.fish
-!/.bashrc
-!/.git-completion.bash
-!/.git-prompt.sh
-!/.gitconfig
-!/deploy.sh
-!/initialize.sh
-!/install.sh
-!/Makefile
-!/.claude/
-!/.claude/CLAUDE.md
 
-!.gitignore
+# スクリプト・ドキュメント類
+!/install.sh
+!/migrate.sh
+!/uninstall.sh
 !/README.md
+!.gitignore
+
+# 設定ファイルディレクトリ
+!/dotfiles/
+/dotfiles/*
+/dotfiles/.**
+!/dotfiles/.bashrc
+!/dotfiles/.git-completion.bash
+!/dotfiles/.git-prompt.sh
+!/dotfiles/.gitconfig
+!/dotfiles/.config/
+/dotfiles/.config/*
+!/dotfiles/.config/fish/
+/dotfiles/.config/fish/*
+!/dotfiles/.config/fish/config.fish
+!/dotfiles/.config/fish/poetry.fish
+!/dotfiles/.claude/
+/dotfiles/.claude/*
+!/dotfiles/.claude/CLAUDE.md
+!/dotfiles/.codex/
+/dotfiles/.codex/*
+!/dotfiles/.codex/AGENTS.md
+!/dotfiles/.codex/skills/
+!/dotfiles/.codex/skills/**
+/dotfiles/.codex/skills/.system/
