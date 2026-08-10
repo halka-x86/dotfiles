@@ -1,43 +1,43 @@
 # halka-x86's dotfiles
 
-Deploy and Initialize for Linux(Ubuntu) and WSL(Ubuntu).
-
-## 用語
-
-- initialize
-  必要なパッケージのインストール(初回時のみ実行)．
-- deploy
-  コンフィグファイルのシンボリックファイルを配置
+Linux(Ubuntu) / WSL(Ubuntu) 向けの dotfiles。
+必要パッケージのインストールから、設定ファイルのシンボリックリンク配置までを行う。
 
 ## 構成
 
-dotfilesはホームディレクトリに配置される想定．
-
 ```txt
 ~/
-├─ dotfiles/
-│  ├ install.sh
+├─ dotfiles/                    ...リポジトリルート
+│  ├ install.sh                 ...インストール & デプロイ
+│  ├ migrate.sh                 ...シンボリックリンク → 実ディレクトリ復元
+│  ├ uninstall.sh                ...シンボリックリンク → 実ファイル復元
+│  ├ dotfiles/                  ...デプロイ対象ファイル群
+│  │  ├ .bashrc
+│  │  ├ .git-completion.bash
+│  │  ├ .git-prompt.sh
+│  │  ├ .gitconfig
+│  │  ├ .config/fish/
+│  │  ├ .claude/CLAUDE.md
+│  │  └ .codex/
+│  │     ├ AGENTS.md
+│  │     └ skills/
 │
-├─ dotfiles_backup/    ...現行設定バックアップディレクトリ(デプロイにて作成)
-    ├ YYYYMMDDHHMMSS/    ...バックアップ日時毎にディレクトリ作成
-
+├─ dotfiles_backup/             ...現行設定バックアップ(デプロイ時に作成)
+   ├ YYYYMMDDHHMMSS/            ...実行日時毎にディレクトリ作成
 ```
+
+`dotfiles/dotfiles/` 配下のファイル・ディレクトリが、ファイル単位でホームディレクトリにシンボリックリンクされる。
 
 ## Usage
 
-### Insall
+### Install
 
-#### Githubから直接ダウンロードして実行．
+#### GitHubから直接ダウンロードして実行
 
-スクリプト内で`git`もしくは`curl`にてダウンロード．  
-ホームディレクトリ直下に`~/dotfiles/`が作成．
+スクリプト内で `git` もしくは `curl` にてダウンロードし、ホームディレクトリ直下に `~/dotfiles/` を作成する。
 
-```bash:bash
+```bash
 sudo -E bash -c "$(curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"
-```
-
-```bash:fish
-bash -c 'sudo -E bash -c "$(curl -sfSL raw.githubusercontent.com/halka-x86/dotfiles/master/install.sh)"'
 ```
 
 #### git にてダウンロードして実行
@@ -51,42 +51,39 @@ cd dotfiles/
 
 ## Script
 
-- `install.sh`    ... dotfilesのダウンロードから initialize, deploy まで一貫して実行
-- `initialize.sh` ... パッケージのインストールを実行
-- `deploy.sh`     ... dotfiles のシンボリックリンクを作成
-
-
+- `install.sh`   ... 必要パッケージのインストールから dotfiles のデプロイまでを一貫して実行
+- `migrate.sh`   ... `.config` `.claude` `.codex` のシンボリックリンクを実ディレクトリに戻し、管理対象エントリのみ dotfiles 側に残す
+- `uninstall.sh` ... dotfiles を指すシンボリックリンクを実ファイルに置き換える(dotfiles配下の全ファイルが対象)
 
 ### `install.sh`
 
-dotfiles のダンロードからデプロイまで全てを行う．  
-dotfiles を GitHub からダウンロード後，他のスクリプト `initialize.sh`および `deploy.sh`を実行する．
+必要なパッケージのインストールと、dotfiles のシンボリックリンク配置を行う。
+既に配置済みのファイルがある場合は `~/dotfiles_backup/` 下にバックアップしてから上書きする。
 
 ```txt:Option
-[-h] : ヘルプ表示
-[-f] : ローカルに既存のdotfilesがある場合に上書き
-[-b] : fish のインストールを行わない
-[-g] : gitを使用してダウンロード(デフォルトはcurl使用)
-```
-
-
-### `initialize.sh`
-
-ソフトウェアのインストールを実行．  
-
-```txt:Option
+[-f] : ローカルに既存のdotfilesがある場合、削除して再ダウンロード
+[-d] : デプロイのみ実行(パッケージインストールをスキップ)
+[-n] : ドライラン(実際の変更を行わない)
+[-g] : ダウンロードに git を使用する(デフォルトは curl)
 [-b] : fish のインストールを行わない
 [-h] : ヘルプ表示
 ```
 
+### `migrate.sh`
 
-### `deploy.sh`
-
-dotfiles のシンボリックリンクを作成．  
-既にコンフィグファイルがある場合には `~/dotfiles_backup/` 下にバックアップされる．
+`~/.config` `~/.claude` `~/.codex` のシンボリックリンクを解除し、実ディレクトリとして復元する。
+復元後、`dotfiles/dotfiles/` 配下の該当ディレクトリは管理対象として指定したファイルのみに整理される。
 
 ```txt:Option
+[-n] : ドライラン(実際の変更を行わない)
 [-h] : ヘルプ表示
-[-l] : 展開するdotfilesファイル群をリスト表示
-[-d] : dyr-run
+```
+
+### `uninstall.sh`
+
+`dotfiles/dotfiles/` を指すシンボリックリンクを、実ファイルへ置き換える。
+
+```txt:Option
+[-n] : ドライラン(実際の変更を行わない)
+[-h] : ヘルプ表示
 ```
