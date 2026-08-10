@@ -75,7 +75,7 @@ function download_dotfiles() {
   run mkdir ${DOTFILES_DIRECTORY}
 
   # gitオプションが使用されているかつgitインストール済みであればgitでダウンロード
-  if [ -n "${USE_GIT}" ] && [ type "git" >/dev/null 2>&1 ]; then
+  if [ -n "${USE_GIT}" ] && type git >/dev/null 2>&1; then
     run git clone --recursive "${REMOTE_URL}" "${DOTFILES_DIRECTORY}"
   else
     # curlでダウンロード
