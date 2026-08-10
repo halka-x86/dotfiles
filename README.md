@@ -9,8 +9,7 @@ Linux(Ubuntu) / WSL(Ubuntu) 向けの dotfiles。
 ~/
 ├─ dotfiles/                    ...リポジトリルート
 │  ├ install.sh                 ...インストール & デプロイ
-│  ├ migrate.sh                 ...シンボリックリンク → 実ディレクトリ復元
-│  ├ uninstall.sh                ...シンボリックリンク → 実ファイル復元
+│  ├ revert.sh                  ...シンボリックリンクの復元(restore / uninstall)
 │  ├ dotfiles/                  ...デプロイ対象ファイル群
 │  │  ├ .bashrc
 │  │  ├ .git-completion.bash
@@ -51,9 +50,8 @@ cd dotfiles/
 
 ## Script
 
-- `install.sh`   ... 必要パッケージのインストールから dotfiles のデプロイまでを一貫して実行
-- `migrate.sh`   ... `.config` `.claude` `.codex` のシンボリックリンクを実ディレクトリに戻し、管理対象エントリのみ dotfiles 側に残す
-- `uninstall.sh` ... dotfiles を指すシンボリックリンクを実ファイルに置き換える(dotfiles配下の全ファイルが対象)
+- `install.sh` ... 必要パッケージのインストールから dotfiles のデプロイまでを一貫して実行
+- `revert.sh`  ... シンボリックリンクを復元するサブコマンド群(`restore` / `uninstall`)
 
 ### `install.sh`
 
@@ -69,21 +67,22 @@ cd dotfiles/
 [-h] : ヘルプ表示
 ```
 
-### `migrate.sh`
+### `revert.sh`
 
-`~/.config` `~/.claude` `~/.codex` のシンボリックリンクを解除し、実ディレクトリとして復元する。
-復元後、`dotfiles/dotfiles/` 配下の該当ディレクトリは管理対象として指定したファイルのみに整理される。
+`install.sh` で配置したシンボリックリンクを元に戻す。用途に応じて2つのサブコマンドを持つ。
 
-```txt:Option
-[-n] : ドライラン(実際の変更を行わない)
-[-h] : ヘルプ表示
+```bash
+./revert.sh restore   [-n] [-h]
+./revert.sh uninstall [-n] [-h]
 ```
 
-### `uninstall.sh`
+- `restore`
+  `~/.config` `~/.claude` `~/.codex` のシンボリックリンクを解除し、実ディレクトリとして復元する。
+  復元後、`dotfiles/dotfiles/` 配下の該当ディレクトリは管理対象として指定したファイルのみに整理される。
+- `uninstall`
+  `dotfiles/dotfiles/` を指すシンボリックリンクを、実ファイルへ置き換える(dotfiles配下の全ファイルが対象)。
 
-`dotfiles/dotfiles/` を指すシンボリックリンクを、実ファイルへ置き換える。
-
-```txt:Option
+```txt:Option (各サブコマンド共通)
 [-n] : ドライラン(実際の変更を行わない)
 [-h] : ヘルプ表示
 ```

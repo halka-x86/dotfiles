@@ -4,14 +4,14 @@ set -e
 readonly DOTFILES_DIRECTORY="${HOME}/dotfiles"
 readonly DOTFILES_HOME="${DOTFILES_DIRECTORY}/dotfiles"
 
-# 復元対象のシンボリックリンクディレクトリ（HOME からの相対パス）
+# restore コマンドの対象（HOME からの相対パス）
 readonly TARGET_DIRS=(
   ".config"
   ".claude"
   ".codex"
 )
 
-# dotfiles に残す管理対象（HOME からの相対パス）
+# restore コマンドで dotfiles に残す管理対象（HOME からの相対パス）
 # ファイルはそのまま、ディレクトリは中身を再帰的にコピー
 readonly MANAGED=(
   ".config/fish/config.fish"
@@ -29,39 +29,58 @@ readonly EXCLUDED=(
 
 ################################################################################
 # Usage
+
 usage() {
   cat <<_EOT_
 Usage:
-  $(basename $0) [Options]
+  $(basename $0) <command> [Options]
 
-Options:
-  -n  Dry-run (no changes will be made)
-  -h  Show this help
+Commands:
+  restore    Restore symlinked dotfile directories to real directories.
+             Targets: ${TARGET_DIRS[*]}
+  uninstall  Replace symlinks pointing to ${DOTFILES_HOME} with real files.
+
+Run '$(basename $0) <command> -h' for command-specific options.
+_EOT_
+}
+
+usage_restore() {
+  cat <<_EOT_
+Usage:
+  $(basename $0) restore [Options]
 
 Description:
   Restore symlinked dotfile directories to real directories.
   Targets: ${TARGET_DIRS[*]}
   Each directory's symlink is replaced with a real directory,
   and dotfiles is trimmed to managed entries only.
+
+Options:
+  -n  Dry-run (no changes will be made)
+  -h  Show this help
+_EOT_
+}
+
+usage_uninstall() {
+  cat <<_EOT_
+Usage:
+  $(basename $0) uninstall [Options]
+
+Description:
+  Replace symlinks managed by install.sh with real files.
+  Only symlinks pointing to ${DOTFILES_HOME} are affected.
+
+Options:
+  -n  Dry-run (no changes will be made)
+  -h  Show this help
 _EOT_
 }
 
 
 ################################################################################
-# オプション解析
-DRY_RUN=false
-
-while getopts ":nh" opt; do
-  case ${opt} in
-    n)  DRY_RUN=true ;;
-    h)  usage; exit 0 ;;
-    *)  echo "Invalid option"; usage; exit 1 ;;
-  esac
-done
-
-
-################################################################################
 # ヘルパー
+
+DRY_RUN=false
 
 run() {
   if "${DRY_RUN}"; then
@@ -119,9 +138,9 @@ copy_entry() {
 
 
 ################################################################################
-# 前提条件チェック
+# restore コマンド
 
-check_preconditions() {
+restore_check_preconditions() {
   echo "[check] Verifying preconditions..."
 
   local ok=true
@@ -148,18 +167,22 @@ check_preconditions() {
   "${ok}" || exit 1
 }
 
+cmd_restore() {
+  while getopts ":nh" opt; do
+    case ${opt} in
+      n)  DRY_RUN=true ;;
+      h)  usage_restore; exit 0 ;;
+      *)  echo "Invalid option"; usage_restore; exit 1 ;;
+    esac
+  done
 
-################################################################################
-# main
-
-main() {
   if "${DRY_RUN}"; then
     echo "=== [dry-run mode] No changes will be made ==="
   fi
-  echo "=== dotfiles symlink restore script ==="
+  echo "=== dotfiles symlink restore ==="
   echo ""
 
-  check_preconditions
+  restore_check_preconditions
 
   # 実行確認（dry-run 時はスキップ）
   if ! "${DRY_RUN}"; then
@@ -246,8 +269,115 @@ main() {
 
 
 ################################################################################
+# uninstall コマンド
+
+uninstall_file() {
+  local src="$1"
+  local rel="${src#$DOTFILES_HOME/}"
+  local dst="${HOME}/${rel}"
+
+  # DOTFILES_HOME を指すシンボリックリンクのみ対象
+  if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then
+    run unlink "$dst"
+    run cp "$src" "$dst"
+    echo "  replaced: ~/${rel}"
+  fi
+}
+
+uninstall_check_preconditions() {
+  echo "[check] Verifying preconditions..."
+
+  if [ ! -d "${DOTFILES_HOME}" ]; then
+    echo "Error: ${DOTFILES_HOME} does not exist. Aborting."
+    exit 1
+  fi
+
+  echo "  OK: ${DOTFILES_HOME} found"
+}
+
+cmd_uninstall() {
+  while getopts ":nh" opt; do
+    case ${opt} in
+      n)  DRY_RUN=true ;;
+      h)  usage_uninstall; exit 0 ;;
+      *)  echo "Invalid option"; usage_uninstall; exit 1 ;;
+    esac
+  done
+
+  if "${DRY_RUN}"; then
+    echo "=== [dry-run mode] No changes will be made ==="
+  fi
+  echo "=== dotfiles uninstall ==="
+  echo ""
+
+  uninstall_check_preconditions
+
+  # 実行確認（dry-run 時はスキップ）
+  if ! "${DRY_RUN}"; then
+    echo ""
+    echo "Symlinks pointing to ${DOTFILES_HOME} will be replaced with real files."
+    echo ""
+    read -rp "Proceed? [y/N]: " answer
+    case "${answer}" in
+      [yY]) ;;
+      *) echo "Aborted."; exit 0 ;;
+    esac
+    echo ""
+  fi
+
+  echo "[1/2] Replacing symlinks with real files..."
+  local count=0
+
+  # DOTFILES_HOME 以下の全ファイルを走査して対応する HOME のシンボリックリンクを置き換え
+  while IFS= read -r -d '' src; do
+    uninstall_file "$src"
+    count=$((count + 1))
+  done < <(find "${DOTFILES_HOME}" -type f -print0)
+
+  echo ""
+  echo "[2/2] Done."
+  if "${DRY_RUN}"; then
+    echo "  ${count} file(s) would be replaced."
+  else
+    echo "  ${count} file(s) processed."
+  fi
+
+  echo ""
+  echo "$(tput setaf 2)Uninstall complete!$(tput sgr0)"
+}
+
+
+################################################################################
+# main
+
+main() {
+  local cmd="$1"
+
+  case "${cmd}" in
+    restore)
+      shift
+      cmd_restore "$@"
+      ;;
+    uninstall)
+      shift
+      cmd_uninstall "$@"
+      ;;
+    -h|--help|"")
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown command: ${cmd}"
+      usage
+      exit 1
+      ;;
+  esac
+}
+
+
+################################################################################
 # Entrypoint
 
-main
+main "$@"
 
 exit 0

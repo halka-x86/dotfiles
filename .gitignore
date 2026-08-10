@@ -10,8 +10,7 @@
 
 # スクリプト・ドキュメント類
 !/install.sh
-!/migrate.sh
-!/uninstall.sh
+!/revert.sh
 !/README.md
 !.gitignore
 
