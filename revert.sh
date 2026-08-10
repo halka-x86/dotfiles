@@ -90,6 +90,21 @@ run() {
   fi
 }
 
+# dry-run でなければ確認プロンプトを表示し、拒否されたら終了する
+confirm() {
+  "${DRY_RUN}" && return 0
+
+  echo ""
+  echo "$1"
+  echo ""
+  read -rp "Proceed? [y/N]: " answer
+  case "${answer}" in
+    [yY]) ;;
+    *) echo "Aborted."; exit 0 ;;
+  esac
+  echo ""
+}
+
 # 除外対象かどうか判定（HOME からの相対パスで比較）
 is_excluded() {
   local path="$1"
@@ -185,21 +200,12 @@ cmd_restore() {
   restore_check_preconditions
 
   # 実行確認（dry-run 時はスキップ）
-  if ! "${DRY_RUN}"; then
-    echo ""
-    echo "The following changes will be made:"
-    for dir in "${TARGET_DIRS[@]}"; do
-      echo "  - Replace ~/${dir} symlink with a real directory"
-    done
-    echo "  - Trim dotfiles managed directories to listed entries only"
-    echo ""
-    read -rp "Proceed? [y/N]: " answer
-    case "${answer}" in
-      [yY]) ;;
-      *) echo "Aborted."; exit 0 ;;
-    esac
-    echo ""
-  fi
+  local message="The following changes will be made:"
+  for dir in "${TARGET_DIRS[@]}"; do
+    message+=$'\n'"  - Replace ~/${dir} symlink with a real directory"
+  done
+  message+=$'\n'"  - Trim dotfiles managed directories to listed entries only"
+  confirm "${message}"
 
   TMPDIR_WORK=$(mktemp -d)
 
@@ -313,17 +319,7 @@ cmd_uninstall() {
   uninstall_check_preconditions
 
   # 実行確認（dry-run 時はスキップ）
-  if ! "${DRY_RUN}"; then
-    echo ""
-    echo "Symlinks pointing to ${DOTFILES_HOME} will be replaced with real files."
-    echo ""
-    read -rp "Proceed? [y/N]: " answer
-    case "${answer}" in
-      [yY]) ;;
-      *) echo "Aborted."; exit 0 ;;
-    esac
-    echo ""
-  fi
+  confirm "Symlinks pointing to ${DOTFILES_HOME} will be replaced with real files."
 
   echo "[1/2] Replacing symlinks with real files..."
   local count=0
