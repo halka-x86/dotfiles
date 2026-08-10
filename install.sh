@@ -93,6 +93,16 @@ function download_dotfiles() {
 ################################################################################
 #  パッケージインストール
 
+update_package_index() {
+  echo "Updating package index..."
+
+  run apt-get update
+
+  echo "$(tput setaf 2)Updated package index complete!. ✔︎$(tput sgr0)"
+
+  return 0
+}
+
 # 必要なパッケージインストール
 install_essential_packages() {
   echo "Install packages..."
@@ -214,6 +224,7 @@ main() {
 
   # 必要なパッケージをインストール(デプロイのみのオプションがない場合)
   if [ -z "${DEPLOY_ONLY}" ]; then
+    update_package_index
     install_essential_packages
   fi
 
